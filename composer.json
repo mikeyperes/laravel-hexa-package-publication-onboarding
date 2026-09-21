@@ -1,6 +1,6 @@
 {
     "name": "hexawebsystems/laravel-hexa-package-publication-onboarding",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Reusable Laravel domain engine for planning, applying, verifying, reconciling, and rolling back publication onboarding.",
     "type": "library",
     "license": "proprietary",

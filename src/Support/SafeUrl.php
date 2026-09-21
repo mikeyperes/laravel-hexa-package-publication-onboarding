@@ -43,21 +43,27 @@ final class SafeUrl
 
     public static function sameOrigin(string $url, string $canonicalOrigin): bool
     {
-        $parts = self::parts($url);
+        // Origin comparison may inspect complete feed or content URLs. Keep the
+        // URL security checks while allowing components that do not affect origin.
+        $parts = self::parts($url, true);
         $origin = 'https://'.strtolower((string) $parts['host']).self::port($parts);
 
         return hash_equals(self::origin($canonicalOrigin), $origin);
     }
 
     /** @return array<string, mixed> */
-    private static function parts(string $url): array
+    private static function parts(string $url, bool $allowQueryAndFragment = false): array
     {
         $url = trim($url);
         $parts = parse_url($url);
         if (! is_array($parts) || strtolower((string) ($parts['scheme'] ?? '')) !== 'https' || empty($parts['host'])) {
             throw new InvalidArgumentException('A valid HTTPS URL is required.');
         }
-        if (isset($parts['user']) || isset($parts['pass']) || isset($parts['query']) || isset($parts['fragment'])) {
+        if (
+            isset($parts['user'])
+            || isset($parts['pass'])
+            || (! $allowQueryAndFragment && (isset($parts['query']) || isset($parts['fragment'])))
+        ) {
             throw new InvalidArgumentException('URLs cannot contain credentials, queries, or fragments.');
         }
 
